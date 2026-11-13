@@ -1,0 +1,37 @@
+
+name: Build TONEX PC CHECKER TOOL
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Windows EXE
+        run: |
+          pyinstaller --noconfirm --clean --onefile --windowed --name "TONEX_PC_CHECKER_TOOL" app.py
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: TONEX-PC-CHECKER-TOOL-Windows
+          path: dist/TONEX_PC_CHECKER_TOOL.exe
+          if-no-files-found: error
